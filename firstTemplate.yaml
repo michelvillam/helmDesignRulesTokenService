@@ -1,0 +1,613 @@
+NAME: zalamiginstallation
+LAST DEPLOYED: Fri Mar 13 10:52:52 2026
+NAMESPACE: zalamig
+STATUS: pending-install
+REVISION: 1
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+{}
+
+COMPUTED VALUES:
+affinity:
+  podAntiAffinity: soft
+  topologyKey: kubernetes.io/hostname
+appArmorProfile:
+  eric-odp-token-service:
+    localhostProfile: ""
+    type: ""
+  localhostProfile: ""
+  type: ""
+container:
+  ports:
+    health: 8003
+    metrics: 8002
+    rest: 8443
+enableServiceLinks: false
+externalFsGroup: null
+extraEnv: []
+extraInitContainers: []
+extraInitContainersTemplate: null
+extraSidecars: null
+extraVolumeMounts: []
+extraVolumes: []
+fullnameOverride: ""
+imageCredentials:
+  pullSecret: null
+  repoPath: null
+imagePullSecrets: []
+labels: {}
+logShipper:
+  input:
+    files:
+    - enabled: true
+      paths:
+      - tokenservice-server.log
+  logLevel: info
+  output:
+    logTransformer:
+      host: eric-log-transformer
+  runAndExit: false
+  shutdownDelay: 10
+  storage:
+    path: /logs
+    size: 150Mi
+nameOverride: ""
+nodeSelector: {}
+podDisruptionBudget:
+  maxUnavailable: 1
+podPriority:
+  eric-odp-token-service:
+    priorityClassName: ""
+podSecurityContext:
+  supplementalGroups:
+  - 206
+probes:
+  tokenservice:
+    livenessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 80
+      periodSeconds: 10
+      timeoutSeconds: 10
+    readinessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 10
+    startupProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 30
+      periodSeconds: 5
+      timeoutSeconds: 10
+prometheus:
+  interval: 15s
+  path: /metrics
+  port: 9600
+  role: endpoints
+  scrape: true
+replicaCount: 1
+resources:
+  eric-odp-token-service:
+    jvm:
+      initialMemoryAllocationPercentage: 60
+      largeMemoryAllocationMaxPercentage: 60
+      smallMemoryAllocationMaxPercentage: 60
+    limits:
+      cpu: 1500m
+      memory: 1024Mi
+    requests:
+      cpu: 1000m
+      memory: 768Mi
+  logshipper:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+rest:
+  keystoreSecret: null
+  truststoreSecret: null
+seccompProfile:
+  eric-odp-token-service:
+    localhostProfile: ""
+    type: ""
+  localhostProfile: ""
+  type: ""
+service:
+  enabled: true
+  port: 8443
+  sgUID: 293
+serviceAccount:
+  name: ""
+sso:
+  keystoreSecret: null
+  truststoreSecret: null
+  url: https://sso:8444
+terminationGracePeriodSeconds: 30
+tolerations:
+- effect: NoExecute
+  key: node.kubernetes.io/unreachable
+  operator: Exists
+  tolerationSeconds: 10
+topologySpreadConstraints: []
+updateStrategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+  type: RollingUpdate
+
+HOOKS:
+MANIFEST:
+---
+# Source: eric-odp-token-service/templates/podDisruptionBudget.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: eric-odp-token-service
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-odp-token-service
+---
+# Source: eric-odp-token-service/templates/serviceaccount.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-odp-token-service-sa
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+  namespace: zalamig
+---
+# Source: eric-odp-token-service/templates/configmap.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-odp-token-service-configmap
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9600"
+    prometheus.io/scrape: "true"
+    prometheus.io/scrape-interval: "15s"
+    prometheus.io/scrape-role: "endpoints"
+data:
+  sso_service_url: "https://sso:8444"
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+---
+# Source: eric-odp-token-service/templates/role-api-namespace.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eric-odp-token-service-api
+  namespace: zalamig
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list", "create", "delete"]
+---
+# Source: eric-odp-token-service/templates/rolebinding.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-odp-token-service-security-policy
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    # Automatically generated annotations for documentation purposes.
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: eric-odp-token-service-api
+subjects:
+- kind: ServiceAccount
+  name: eric-odp-token-service-sa
+---
+# Source: eric-odp-token-service/templates/headless-service.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-odp-token-service
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9600"
+    prometheus.io/scrape: "true"
+    prometheus.io/scrape-interval: "15s"
+    prometheus.io/scrape-role: "endpoints"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8443
+    targetPort: 8443
+    protocol: TCP
+  - name: metrics
+    port: 9600
+    protocol: TCP
+    targetPort: 9600
+  selector:
+    app.kubernetes.io/name: eric-odp-token-service
+    app.kubernetes.io/instance: zalamiginstallation
+  ipFamilyPolicy: "SingleStack"
+  ipFamilies: ["IPv4"]
+---
+# Source: eric-odp-token-service/templates/deployment.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-odp-token-service
+  labels:
+    app: "eric-odp-token-service"
+    app.kubernetes.io/instance: "zalamiginstallation"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-odp-token-service"
+    app.kubernetes.io/version: "0.1.0-1"
+    chart: "eric-odp-token-service-0.1.0-1"
+    helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-odp-token-service HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "0.1.0"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9600"
+    prometheus.io/scrape: "true"
+    prometheus.io/scrape-interval: "15s"
+    prometheus.io/scrape-role: "endpoints"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-odp-token-service
+      app.kubernetes.io/instance: zalamiginstallation
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: "eric-odp-token-service"
+        app.kubernetes.io/instance: "zalamiginstallation"
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/name: "eric-odp-token-service"
+        app.kubernetes.io/version: "0.1.0-1"
+        chart: "eric-odp-token-service-0.1.0-1"
+        helm.sh/chart: "eric-odp-token-service-0.1.0-1"
+      annotations:
+        ericsson.com/product-name: "eric-odp-token-service HELM"
+        ericsson.com/product-number: "CXC 201 0000"
+        ericsson.com/product-revision: "0.1.0"        
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        supplementalGroups: 
+        - 206
+      volumes:
+        - name: app-deployment-volume
+          emptyDir:
+            sizeLimit: 512Mi
+      serviceAccountName: eric-odp-token-service-sa
+      containers:
+      - name: eric-odp-token-service
+        image: armdocker.rnd.ericsson.se/REPO_PATH/eric-odp-token-service:VERSION
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - name: rest
+          containerPort: 8443
+          protocol: TCP
+        env:
+        - name: ODP_TOKEN_SERVICE_HOSTNAME
+          value: "eric-odp-token-service"
+        - name: ODP_TOKEN_SERVICE_HTTP_PORT
+          value: "8443"
+        - name: SSO_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: eric-odp-token-service-configmap
+              key: sso_service_url
+        - name: SERVICE_ID
+          value: "eric-odp-token-service"
+        - name: JAVA_OPTS
+          value: -XX:InitialRAMPercentage=60.000000 -XX:MaxRAMPercentage=60.000000 -XX:MinRAMPercentage=60.000000
+        - name: TZ
+          value: "UTC"
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "768Mi"
+          limits:
+            cpu: "1500m"
+            memory: "1024Mi"
+        volumeMounts:
+          - name: app-deployment-volume
+            mountPath: "/ericsson/3pp/jboss"
+        startupProbe:
+          exec:
+            command:
+              - /scripts/microservice_startup_healthcheck.sh
+          failureThreshold: 5
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+              - /scripts/microservice_healthcheck.sh
+          failureThreshold: 3
+          initialDelaySeconds: 80
+          periodSeconds: 10
+          timeoutSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - /scripts/microservice_healthcheck.sh
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 10
+
+      nodeSelector: 
+      
+      terminationGracePeriodSeconds:
+        30
+      tolerations: 
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 10
+      topologySpreadConstraints: 
+        []
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-odp-token-service
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-odp-token-service/templates/logshipper-configmap.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-odp-token-service/templates/logshipper-tls-cert-lt-client.yaml
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+NOTES:
+====
+    COPYRIGHT Ericsson 2024
+
+
+
+    The copyright to the computer program(s) herein is the property of
+
+    Ericsson Inc. The programs may be used and/or copied only with written
+
+    permission from Ericsson Inc. or in accordance with the terms and
+
+    conditions stipulated in the agreement/contract under which the
+
+    program(s) have been supplied.
+====
